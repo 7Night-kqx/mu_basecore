@@ -29,6 +29,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 
 #include <Protocol/VariablePolicy.h>
 #include <Library/VariablePolicyLib.h>
+#include <Library/UefiRuntimeLib.h>
 
 #define SHA_DIGEST_SIZE_MAX  SHA512_DIGEST_SIZE
 
@@ -2569,6 +2570,10 @@ VerifyTimeBasedPayloadAndUpdate (
   EFI_VARIABLE_AUTHENTICATION_2  *CertData;
   AUTH_VARIABLE_INFO             OrgVariableInfo;
   BOOLEAN                        IsDel;
+
+  if (EfiAtRuntime ()) {
+    return EFI_WRITE_PROTECTED;
+  }
 
   ZeroMem (&OrgVariableInfo, sizeof (OrgVariableInfo));
   FindStatus = mAuthVarLibContextIn->FindVariable (
